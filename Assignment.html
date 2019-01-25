@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <div id="scoreContainer">
+        <label id="score">Score:</label>
+        <label id="scoreValue">0</label>
+    </div>
+
+    <style>
+        #score {
+            color: white;
+            font-size: 30px;
+        }
+
+        #scoreValue {
+            color: white;
+            font-size: 30px;
+        }
+
+        #scoreContainer {
+            background: blue;
+            float: right;
+            margin-right: 100px;
+            height: 30px;
+            width: 100px;
+            padding: 10px;
+            margin-top: 30px;
+        }
+
+        #chancesContainer {
+            background: red;
+            height: 30px;
+            width: 150px;
+            position: fixed;
+            left: 50px;
+            bottom: 20px;
+            padding: 8px;
+        }
+
+        #chancesLeft {
+            color: white;
+            font-size: 20px;
+            position: relative;
+            left: 5px;
+        }
+
+        #chances {
+            color: white;
+            font-size: 25px;
+            position: relative;
+            left: 5px;
+        }
+
+        #board {
+            height: 500px;
+            width: 500px;
+            border: 1px solid green;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+        }
+
+        #arrow {
+            position: absolute;
+            left: 0px;
+            border: 1px solid green;
+            width: 100px;
+            top: 0px;
+        }
+
+        #balloons {
+            position: relative;
+        }
+
+        .bal1 {
+            position: absolute;
+            height: 150px;
+            width: 150px;
+            border-radius: 50%;
+            border: 1px solid green;
+            top: 20px;
+            right: 30px;
+        }
+
+        .bal2 {
+            position: absolute;
+            height: 100px;
+            width: 100px;
+            border-radius: 50%;
+            border: 1px solid green;
+            top: 200px;
+            right: 40px;
+        }
+
+        .bal3 {
+            position: absolute;
+            height: 150px;
+            width: 150px;
+            border-radius: 50%;
+            border: 1px solid green;
+            top: 330px;
+            right: 0px;
+        }
+
+        .activeBalloon {
+            border: 1px solid red;
+        }
+
+        .defaultBalloons {
+            border: 1px solid green;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="board">
+
+        <div id="arrow">
+        </div>
+        <div id="balloons" onclick="touchedBalloon(event)">
+            <div class="bal1">
+            </div>
+            <div class="bal2">
+            </div>
+            <div class="bal3">
+            </div>
+        </div>
+        <div id="chancesContainer">
+            <label id="chancesLeft">Chances Left:</label>
+            <label id="chances">3</label>
+        </div>
+
+    </div>
+
+    <Script>
+        var t = 0, min = 0 + "px";
+        var targetTop, targetHeight, targetLeft;
+        var target = "", arrLeft = 0;
+        var chancesCount = 3;
+        var chancesLeft = document.getElementById("chances");
+        var score = document.getElementById("scoreValue");
+        var scoreCount = 0;
+
+        function touchedBalloon(e) {
+            target = e.target;
+            var activeBal = document.querySelector("#balloons > div.activeBalloon");
+            targetTop = target.offsetTop;
+            targetLeft = target.offsetLeft;
+            targetHeight = target.offsetHeight;
+
+            if (activeBal) {
+                activeBal.classList.remove('activeBalloon');
+            }
+
+            target.classList.add('activeBalloon');
+
+        }
+
+
+
+        window.onkeyup = function (e) {
+            var arrow = document.getElementById("arrow");
+            if (chancesCount <= 0) {
+                alert("You're left with no chances.Try Again!!!");
+                reset();
+                return;
+            }
+
+            if (e.keyCode == 40) {
+                t = t + 5;
+                if (t > 500) {
+                    t = 500;
+                    return;
+                }
+                arrow.style.top = t + "px";
+            }
+
+            if (e.keyCode == 38) {
+                t = t - 5;
+                if (t < 0) {
+                    t = 0;
+                    return;
+                }
+                arrow.style.top = t + "px";
+            }
+
+            if (e.keyCode == 13) {
+
+                if (target == "") {
+                    alert("please select the target balloon");
+                    return;
+                }
+
+                chancesCount = chancesCount - 1;
+                chancesLeft.innerHTML = chancesCount;
+
+                var interval = setInterval(function () {
+                    arrLeft += 1;
+                    arrow.style.left = arrLeft + "px";
+                    debugger;
+                    if (t > targetTop && t < (targetTop + targetHeight)) {
+                        // debugger;
+                        if (arrLeft + 100 == targetLeft) {
+                            scoreCount++;
+                            score.innerHTML = scoreCount;
+                            target.style.display = "none";
+                            initialPosition();
+                            clearInterval(interval);
+                            return;
+                        }
+                    }
+                    if (arrLeft > 400) {
+                        clearInterval(interval);
+                        initialPosition();
+                        return;
+                    }
+
+                }, 10);
+
+                if (chancesLeft == 0) {
+                    alert("Your Score is {score}");
+                    // reset();
+                }
+            }
+
+        };
+
+
+
+        function initialPosition() {
+            arrow.style.left = 0 + "px";
+            arrow.style.top = 0 + "px";
+            arrLeft = 0;
+            target.classList.remove('activeBalloon');
+            targetTop = 0;
+            targetHeight = 0;
+            target = "";
+        }
+
+        function reset() {
+            location.reload();
+        }
+
+    </Script>
+
+</body>
+
+</html>
